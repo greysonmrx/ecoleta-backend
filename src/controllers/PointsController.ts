@@ -3,6 +3,28 @@ import { Request, Response } from 'express';
 import knex from '../database/connection';
 
 class PointsController {
+  async show(request: Request, response: Response): Promise<Response> {
+    const { id } = request.params;
+
+    const point = await knex('points').where('id', id).first();
+
+    if (!point) {
+      return response.status(400).json({ message: 'Point not found' });
+    }
+
+    const serializedPoints = {
+      ...point,
+      image_url: `http://192.168.100.52:5000/uploads/${point.image}`,
+    };
+
+    const items = await knex('items')
+      .join('point_items', 'items.id', '=', 'point_items.item_id')
+      .where('point_items.point_id', id)
+      .select('items.title');
+
+    return response.json({ point: serializedPoints, items });
+  }
+
   async index(request: Request, response: Response): Promise<Response> {
     const { city, uf, items } = request.query;
 
