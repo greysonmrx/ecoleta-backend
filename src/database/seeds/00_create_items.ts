@@ -1,6 +1,7 @@
 import Knex from 'knex';
 
-export default async function seed(knex: Knex): Promise<void> {
+// eslint-disable-next-line import/prefer-default-export
+export async function seed(knex: Knex): Promise<void> {
   await knex('items').insert([
     {
       title: 'Lâmpadas',
